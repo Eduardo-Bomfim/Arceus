@@ -1,4 +1,5 @@
-from src.classes.token import Token, TokenType
+from src.classes.token import Token
+from src.enum.token_type import TokenType
 import sys
 
 class Scanner:
@@ -83,7 +84,7 @@ class Scanner:
                     return Token(TokenType.ASSIGN, '=', self.line, start_col)
                 
                 elif char == '!':
-                    error_msg = f"Erro Léxico: Caractere inesperado '!' na linha {self.line}, coluna {start_col}"
+                    error_msg = f"[Erro Léxico] Linha {self.line}, Coluna {start_col}: caractere inesperado '!'"
                     print(error_msg, file=sys.stderr)
                     self.advance()
                     return Token(TokenType.ERROR, "!", self.line, start_col)
@@ -103,7 +104,7 @@ class Scanner:
                 return Token(TokenType.DELIM, char, self.line, start_col)
 
             # Tratamento de caracteres desconhecidos
-            error_msg = f"Erro Léxico: Caractere inválido '{char}' na linha {self.line}, coluna {start_col}"
+            error_msg = f"[Erro Léxico] Linha {self.line}, Coluna {start_col}: caractere inválido '{char}'  "
             print(error_msg, file=sys.stderr)
             invalid_char = char
             self.advance()
