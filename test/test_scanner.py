@@ -17,7 +17,11 @@ def test_todas_palavras_reservadas():
         "e",
         "ou",
         "não",
-        "fim"
+        "fim",
+        "para",
+        "ate",
+        "passo",
+        "repita"
     ]
 
     scanner = Scanner(" ".join(palavras))

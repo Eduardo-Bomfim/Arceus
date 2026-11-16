@@ -6,7 +6,8 @@ class Scanner:
     KEYWORDS = {
         "programa", "var", "inteiro", "booleano", "se", "senão",
         "enquanto", "escreva", "leia", "verdadeiro", "falso",
-        "e", "ou", "não", "fim"
+        "e", "ou", "não", "fim",
+        "para", "ate", "passo", "repita"
     }
 
     def __init__(self, source_code: str):
@@ -104,7 +105,7 @@ class Scanner:
                 return Token(TokenType.DELIM, char, self.line, start_col)
 
             # Tratamento de caracteres desconhecidos
-            error_msg = f"[Erro Léxico] Linha {self.line}, Coluna {start_col}: caractere inválido '{char}'  "
+            error_msg = f"[Erro Léxico] Linha {self.line}, Coluna {start_col}: caractere inválido '{char}'"
             print(error_msg, file=sys.stderr)
             invalid_char = char
             self.advance()
