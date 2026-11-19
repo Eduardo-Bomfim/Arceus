@@ -613,7 +613,8 @@ def test_fixtures_invalidos_rejeitados_com_posicao(fixture_path: Path):
 # 7. CLI (main.py)
 # =====================================================================
 
-def test_cli_programa_valido_e_flag_ast(capsys):
+def test_cli_programa_valido_e_flag_ast(capsys, monkeypatch):
+    monkeypatch.setattr("builtins.input", lambda prompt="": "10")
     valid_file = str(FIXTURES_DIR / "valid" / "01_basico.ml")
 
     code = main([valid_file])
