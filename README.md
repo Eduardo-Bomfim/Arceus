@@ -10,8 +10,8 @@ O projeto implementa o pipeline clássico de compilação, traduzindo conceitos 
 
 - **Analisador Léxico (M1):** Reconhecimento manual de tokens via Autômato Finito Determinístico (AFD), descarte de espaços/comentários (`#`), tratamento de *lookahead* (`=`, `==`, `<`, `<=`, `>`, `>=`, `!=`) e rastreamento de linha/coluna.
 - **Analisador Sintático & AST (M2):** Parser descendente recursivo LL(1) manual para a GLC da MiniLang, construção de Árvore Sintática Abstrata (AST) navegável com padrão *Visitor* (`PrintAstVisitor`), recuperação de erros em modo pânico (`synchronize()`) e resolução do *dangling else* por casamento guloso.
-- **Extensão Obrigatória (Opção D):** Suporte sintático e léxico aos comandos de repetição `para` e `repita`/`ate` (`ForNode` / `RepeatNode`).
-- **Analisador Semântico (M3 — planejado):** Tabela de símbolos com escopos léxicos aninhados, checagem/inferência de tipos (`inteiro`, `booleano`) e verificação de inicialização.
+- **Analisador Semântico (M3):** Tabela de símbolos com pilha de escopos léxicos aninhados (`SymbolTable`), checagem e inferência de tipos (`inteiro`, `booleano`, sentinela `ERROR`), anotação de `inferred_type` na AST e análise de inicialização com fluxo condicional (`then` ∩ `else`).
+- **Extensão Obrigatória (Opção D):** Suporte léxico, sintático e semântico aos comandos de repetição `para` e `repita`/`ate` (`ForNode` / `RepeatNode`).
 - **Back-End & Otimização (M4 — planejado):** Interpretação direta da AST via padrão *Visitor* com runtime interativo (`leia` / `escreva`) e otimização por *Constant Folding*.
 
 ---
@@ -52,11 +52,14 @@ uv sync
 ### 3. Executar o Compilador
 
 ```bash
-# Validar léxico e sintaxe de um arquivo MiniLang
+# Validar léxico, sintaxe e semântica de um arquivo MiniLang
 uv run python main.py caminho/do/programa.ml
 
-# Inspecionar a Árvore Sintática Abstrata (AST) formatada
+# Inspecionar a Árvore Sintática Abstrata (AST) anotada com tipos inferidos
 uv run python main.py caminho/do/programa.ml --ast
+
+# Exibir a tabela de símbolos (identificador, tipo, escopo, linha, coluna, inicialização)
+uv run python main.py caminho/do/programa.ml --symbols
 
 # Exibir tokens gerados pelo analisador léxico
 uv run python main.py caminho/do/programa.ml --tokens
@@ -85,11 +88,14 @@ Arceus/
 │       ├── scanner.py           # [M1] Scanner AFD manual com lookahead
 │       ├── ast_nodes.py         # [M2] Nós da AST (@dataclass) e AstVisitor
 │       ├── parser.py            # [M2] Parser LL(1) manual + modo pânico
+│       ├── symbol_table.py      # [M3] Symbol e SymbolTable com pilha de escopos
+│       ├── semantic.py          # [M3] SemanticAnalyzer(AstVisitor)
 │       └── visitors/
 │           └── printer.py       # [M2] PrintAstVisitor (Pretty Printer)
 └── test/
     ├── test_scanner.py          # [M1] Suíte unitária do léxico
     ├── test_parser.py           # [M2] Suíte do parser, AST, precedência e modo pânico
+    ├── test_semantic.py         # [M3] Suíte de escopos, tipos, anotação e inicialização
     └── fixtures/
         ├── valid/               # Programas .ml válidos para regressão
         └── invalid/             # Programas .ml inválidos com erros esperados
